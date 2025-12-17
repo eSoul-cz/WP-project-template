@@ -30,6 +30,15 @@ FORCE=0
 NO_DB_IMPORT=0
 ADMINS=()
 
+# Prefer mariadb client if available, otherwise fall back to mysql
+DB_CLIENT=""
+
+if command -v mariadb >/dev/null 2>&1; then
+  DB_CLIENT="mariadb"
+elif command -v mysql >/dev/null 2>&1; then
+  DB_CLIENT="mysql"
+fi
+
 usage() {
   cat <<EOF
 Usage: $(basename "$0") [options]
@@ -62,7 +71,9 @@ error() {
 
 check_requirements() {
   command -v php >/dev/null 2>&1 || error "php CLI is required but not found in PATH"
-  command -v mysql >/dev/null 2>&1 || error "mysql client is required but not found in PATH"
+  if [[ -z "$DB_CLIENT" ]]; then
+    error "Neither 'mariadb' nor 'mysql' client is available in PATH; please install one of them."
+  fi
   [[ -f "$DB_SQL_TEMPLATE" ]] || error "Template SQL file not found at $DB_SQL_TEMPLATE"
   [[ -f "$PROJECT_ROOT/scripts/passwords.php" ]] || error "scripts/passwords.php not found; run from WP template root"
   [[ -f "$NGINX_TEMPLATE" ]] || error "nginx-site.conf not found at $NGINX_TEMPLATE"
@@ -355,7 +366,7 @@ test_db_connection() {
   if [[ "$DB_HOST" == "host.docker.internal" ]]; then
     DB_HOST="localhost"
   fi
-  mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1" "$DB_NAME" >/dev/null 2>&1 || error "Unable to connect to database $DB_NAME at $DB_HOST:$DB_PORT with provided credentials"
+  "$DB_CLIENT" -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1" "$DB_NAME" >/dev/null 2>&1 || error "Unable to connect to database $DB_NAME at $DB_HOST:$DB_PORT with provided credentials"
 }
 
 import_sql() {
@@ -363,8 +374,8 @@ import_sql() {
   if [[ "$DB_HOST" == "host.docker.internal" ]]; then
     DB_HOST="localhost"
   fi
-  echo "mysql -h \"$DB_HOST\" -P \"$DB_PORT\" -u \"$DB_USER\" -p\"$DB_PASS\" \"$DB_NAME\""
-  mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" <"$DB_SQL_GENERATED" || error "Failed to import SQL into database"
+  echo "$DB_CLIENT -h \"$DB_HOST\" -P \"$DB_PORT\" -u \"$DB_USER\" -p\"$DB_PASS\" \"$DB_NAME\""
+  "$DB_CLIENT" -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" <"$DB_SQL_GENERATED" || error "Failed to import SQL into database"
 }
 
 print_summary() {
