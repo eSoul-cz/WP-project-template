@@ -11389,7 +11389,7 @@ CREATE TABLE `wp_term_taxonomy` (
 
 LOCK TABLES `wp_term_taxonomy` WRITE;
 /*!40000 ALTER TABLE `wp_term_taxonomy` DISABLE KEYS */;
-INSERT INTO `wp_term_taxonomy` VALUES ('1','1',NULL,'','0','1');
+INSERT INTO `wp_term_taxonomy` VALUES ('1','1','category','','0','1');
 /*!40000 ALTER TABLE `wp_term_taxonomy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -11412,15 +11412,6 @@ CREATE TABLE `wp_termmeta` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `wp_termmeta`
---
-
-LOCK TABLES `wp_termmeta` WRITE;
-/*!40000 ALTER TABLE `wp_termmeta` DISABLE KEYS */;
-/*!40000 ALTER TABLE `wp_termmeta` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `wp_terms`
 --
 
@@ -11437,16 +11428,6 @@ CREATE TABLE `wp_terms` (
                             KEY `name` (`name`(191))
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `wp_terms`
---
-
-LOCK TABLES `wp_terms` WRITE;
-/*!40000 ALTER TABLE `wp_terms` DISABLE KEYS */;
-INSERT INTO `wp_terms` VALUES ('1',NULL,NULL,'0');
-/*!40000 ALTER TABLE `wp_terms` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `wp_usermeta`
