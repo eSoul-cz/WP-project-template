@@ -7,7 +7,6 @@ composer.phar
 /readme.html
 /wp-*.php
 /xmlrpc.php
-wp-config.php
 /wp-content/plugins/hello.php
 /wp-content/uploads/
 *.log
