@@ -1,0 +1,22 @@
+services:
+  wordpress:
+    image: rg.fr-par.scw.cloud/esoul-starters/nologin/esoul-wp:0.1.1
+    container_name: project_wordpress
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+      - .env.secrets
+    volumes:
+      - "./wp-content:/var/www/html/wp-content"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    mem_limit: 1024m
+    restart: unless-stopped
+    networks:
+      apps:
+networks:
+  apps:
+    external: true
