@@ -57,6 +57,7 @@ normalize_dir_name() {
   normalized="$(echo "$name" | iconv -c -t ascii//TRANSLIT 2>/dev/null || echo "$name")"
   # Replace non-alphanumeric with hyphen, trim
   normalized="${normalized//[^a-zA-Z0-9]+/-}"
+  normalized="${normalized// /_}"
   normalized="${normalized//--/-}"
   normalized="${normalized#-}"
   normalized="${normalized%-}"
@@ -171,7 +172,7 @@ run_installer() {
     fi
   fi
 
-  echo "Running installer in '$TARGET_DIR'" >&2
+  echo "Running installer in '$(pwd)'" >&2
   bash scripts/install.sh "${INSTALL_ARGS[@]}"
 }
 

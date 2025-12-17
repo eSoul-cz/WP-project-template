@@ -6,7 +6,7 @@ set -euo pipefail
 # prepares db.generated.sql with updated domain and admin users, and
 # optionally imports it into the configured MySQL database.
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_ROOT="$(pwd)"
 ENV_FILE="$PROJECT_ROOT/.env"
 ENV_SECRETS_FILE="$PROJECT_ROOT/.env.secrets"
 DB_SQL_TEMPLATE="$PROJECT_ROOT/db.sql"
@@ -250,7 +250,7 @@ configure_nginx() {
 
   # Update server_name and root
   sed -i.bak "s/server_name .*/server_name $DOMAIN;/" "$tmp" || true
-  sed -i.bak "s#root .*#root $PROJECT_ROOT;#" "$tmp" || true
+  sed -i.bak "s#root .*#root $PROJECT_ROOT/html;#" "$tmp" || true
   # Update fastcgi_pass to use container name
   sed -i.bak "s/fastcgi_pass .*/fastcgi_pass $CONTAINER_NAME:9000;/" "$tmp" || true
 
@@ -351,10 +351,19 @@ generate_sql() {
 # Test DB connection
 
 test_db_connection() {
+  # Replace host.docker.internal with localhost if needed
+  if [[ "$DB_HOST" == "host.docker.internal" ]]; then
+    DB_HOST="localhost"
+  fi
   mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1" "$DB_NAME" >/dev/null 2>&1 || error "Unable to connect to database $DB_NAME at $DB_HOST:$DB_PORT with provided credentials"
 }
 
 import_sql() {
+  # Replace host.docker.internal with localhost if needed
+  if [[ "$DB_HOST" == "host.docker.internal" ]]; then
+    DB_HOST="localhost"
+  fi
+  echo "mysql -h \"$DB_HOST\" -P \"$DB_PORT\" -u \"$DB_USER\" -p\"$DB_PASS\" \"$DB_NAME\""
   mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" <"$DB_SQL_GENERATED" || error "Failed to import SQL into database"
 }
 
