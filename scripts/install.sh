@@ -375,7 +375,7 @@ import_sql() {
     DB_HOST="localhost"
   fi
   echo "$DB_CLIENT -h \"$DB_HOST\" -P \"$DB_PORT\" -u \"$DB_USER\" -p\"$DB_PASS\" \"$DB_NAME\""
-  "$DB_CLIENT" -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" <"$DB_SQL_GENERATED" || error "Failed to import SQL into database"
+  "$DB_CLIENT" --binary-mode=1 -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" <"$DB_SQL_GENERATED" || error "Failed to import SQL into database"
 }
 
 print_summary() {
